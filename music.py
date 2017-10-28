@@ -63,26 +63,32 @@ scframe = VerticalScrolledFrame(root)
 scframe.pack()
 
 global pygame
-directory = os.walk("/home/venkatesh/Music/Music").next()[2]
 pygame.mixer.init()
 
-for i, x in enumerate(directory):
-    btn = tk.Button(scframe.interior, height=0, width=60, 
-        bg="gray99", fg="purple3", text=str(x),
-        command=lambda i=i,x=x: play(i))
-    btn.pack(padx=0, pady=0, side=tk.TOP)
+folder = []
+directory = []
+
+for base, dirnames, filenames in os.walk("/home/venkatesh/Music/Music"):
+    for filename in fnmatch.filter(filenames, "*.mp3"):
+    	folder.append(os.path.join(base, filename))
+    	directory.append(filename)
+
+for i, x, in enumerate(directory):
+    	btn = tk.Button(scframe.interior, height=0, width=60, 
+    		bg="gray99", fg="purple3", text=str(x),command=lambda i=i,x=x: play(i))
+    	btn.pack(padx=0, pady=0, side=tk.TOP)
 
 
 prevb = tk.Button(heigh=0, width=10, bg="blue",fg="white",text="Prev",
-	command=lambda i=i,x=x: prev_track(i))
+	command=lambda i=i,x=x: prev_track())
 prevb.pack(padx=0,pady=0,side=tk.LEFT)
 
 pauseb = tk.Button(heigh=0, width=10, bg="blue",fg="white",text="Pause",
-	command=lambda i=i,x=x: pause(i))
+	command=lambda i=i,x=x: pause())
 pauseb.pack(padx=0,pady=0,side=tk.LEFT)
 
 nextb = tk.Button(heigh=0, width=10, bg="blue",fg="white",text="Next",
-	command=lambda i=i,x=x: next_track(i))
+	command=lambda i=i,x=x: next_track())
 nextb.pack(padx=0,pady=0,side=tk.LEFT)
 
 
@@ -90,13 +96,14 @@ print "Total Number of tracks: ",len(directory)
 def play(i):
     global j
     j = i
-    pygame.mixer.music.load('/home/venkatesh/Music/Music/' + directory[i])
+    pygame.mixer.music.load(folder[i])
+    print folder[i]
     pygame.mixer.music.play()
 
     if pygame.mixer.music.get_busy() == 1:
     	pauseb["text"] = "Pause"
     i += 1
-    pygame.mixer.music.queue('/home/venkatesh/Music/Music/' + directory[i])
+    pygame.mixer.music.queue(folder[i])
 
 def pause(a):
     if pauseb["text"] == "Pause":
@@ -107,16 +114,18 @@ def pause(a):
 	pygame.mixer.music.unpause()
 
 
-def next_track(n):
+def next_track():
     global j
     j += 1
-    pygame.mixer.music.load('/home/venkatesh/Music/Music/' + directory[j])
+    pygame.mixer.music.load(folder[j])
+    print folder[j]
     pygame.mixer.music.play()
 
-def prev_track(p):
+def prev_track():
     global j
     j -= 1
-    pygame.mixer.music.load('/home/venkatesh/Music/Music/' + directory[j])
+    pygame.mixer.music.load(folder[j])
+    print folder[j]
     pygame.mixer.music.play()
 
 root.mainloop()
