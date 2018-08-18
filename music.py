@@ -20,6 +20,7 @@ from mutagen.mp3 import MP3
 def play_track(val):
     global num_tracks
     global i
+    global total_s
     i = val
     pygame.init()
     SONG_END = pygame.USEREVENT + 1
@@ -48,11 +49,6 @@ def play_track(val):
 
 def album(i):
     print "i value in album: ", i
-#    if True:
-#        temp = i
-#        if temp != i:
-#           print "Entering Album"
-#           print "Album: ",folder[i]
 
     file = File(folder[i])
     artwork = file.tags['APIC:'].data
@@ -83,6 +79,7 @@ if __name__ == "__main__":
 
     i = 0
     j = 0
+    total_s = 0
     path="image.jpg"
 
     class VerticalScrolledFrame(tk.Frame):
@@ -147,15 +144,20 @@ if __name__ == "__main__":
         pygame.mixer.music.set_volume(val)
 
     def set_pos(val):
-        sound = pygame.mixer.Sound(folder[i])
-        length = sound.get_length()
-        print "Len: ", length
-        total_s = length / 1000
+	global total_s
         total_m = total_s / 60
         remain_s = total_s % 60
         print "Min: %d Sec: %d  TotalSec: %d" %(total_m, remain_s, total_s)
-        val = float(val)
-        val = length * val
+#        val = float(val)
+#        val = length * val
+
+    def play(i):
+        print "i in play: ", i
+    	th1 = threading.Thread(target=play_track, args=(i,))
+    	th1.start()
+        th2 = threading.Thread(target=album, args=(i,))
+        th2.start()
+#    	th1.join()
 
 
     
@@ -164,8 +166,8 @@ if __name__ == "__main__":
     if len(tempdir) > 0:
         print "You chose %s" % tempdir
    
-    for base, dirnames, filenames in os.walk(tempdir):
-#    for base, dirnames, filenames in os.walk("/home/venkatesh/Music"):
+#    for base, dirnames, filenames in os.walk(tempdir):
+    for base, dirnames, filenames in os.walk("/home/venkatesh/Music"):
         for filename in fnmatch.filter(filenames, "*.mp3"):
             folder.append(os.path.join(base, filename))
             directory.append(filename)
@@ -207,16 +209,6 @@ if __name__ == "__main__":
         os._exit(1)
 
     pygame.mixer.init()
-
-    def play(i):
-        print "i in play: ", i
-    	th1 = threading.Thread(target=play_track, args=(i,))
-    	th1.start()
-        th2 = threading.Thread(target=album, args=(i,))
-        th2.start()
-        th3 = threading.Thread(target=progress)
-        th3.start()
-#    	th1.join()
 
     def pause():
         if pauseb["text"] == "Pause":
