@@ -13,26 +13,10 @@ def callback(port):
     while(1):
     	data = port.readline().decode()
     	handler(data)
-	data = ""
+    	data = data + ':'
+    	file_ptr.write(data)
 
-l1 = Label(top, text="Select a serial device", fg="blue")
-l1.pack(side='top', expand=True,padx=0,pady=0)
-serialdevice = Entry(top)
-serialdevice.pack(side='top')
-device = serialdevice.get()
-
-l2 = Label(top, text="Baudrate", fg="blue")
-l2.pack(side='top', expand=True,padx=0,pady=0)
-baud = Entry(top)
-baud.pack(side='top')
-baudrate = baud.get()
-
-S = Scrollbar(top)
-T=Text(top)
-T.focus_set()
-S.pack(side=RIGHT,fill=Y)
-T.pack(side=LEFT,fill=Y)
-T.config(yscrollcommand=S.set)
+    	data = ""
 
 
 def thread_func():
@@ -41,9 +25,31 @@ def thread_func():
     thread = threading.Thread(target=callback, args=(port,))
     thread.start()
 
-b=Button(top, text="Show", command=thread_func)
-b.pack()
-c=Button(top, text='Exit', command=top.destroy)
-c.pack()
+if __name__ == "__main__":
 
-top.mainloop()
+	b=Button(top, text="Show", command=thread_func)
+	b.pack()
+	c=Button(top, text='Exit', command=top.destroy)
+	c.pack()
+	l1 = Label(top, text="Select a serial device", fg="blue")
+	l1.pack(side='top', expand=True,padx=0,pady=0)
+	serialdevice = Entry(top)
+	serialdevice.pack(side='top')
+	device = serialdevice.get()
+
+	l2 = Label(top, text="Baudrate", fg="blue")
+	l2.pack(side='top', expand=True,padx=0,pady=0)
+	baud = Entry(top)
+	baud.pack(side='top')
+	baudrate = baud.get()
+
+	S = Scrollbar(top)
+	T=Text(top)
+	T.focus_set()
+	S.pack(side=RIGHT,fill=Y)
+	T.pack(side=LEFT,fill=Y)
+	T.config(yscrollcommand=S.set)
+
+	file_ptr = open("Log.txt", "w+");
+
+	top.mainloop()
